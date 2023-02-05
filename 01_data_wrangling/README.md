@@ -26,3 +26,7 @@ It is important to note that Vendor Y's 'dob' column needed some extra cleaning/
 In this case, it's safe to assume that years represented by the digits 24-99 are from the 20th century, since 2024 and later is in the future. That leaves us to deal with years represented by the digits 00-23.
 
 Since we are working with voting data, and people are not allowed to vote until age 18, I made a large assumption that years 06-23 fell into the 20th century and years 00-05 fell into the 21st century. This is a very large assumption, and one that is certainly prone to errors. Additionally, this conditional will have to change over time (in the year 2024, we may want to consider dates starting with the digits 06 were born in 2006 rather than 1906). If there was more time, I could have made this conditional more robust.
+
+## Notes
+
+Unfortunately, I ran otu of time and was not able to import to csv file into the database.
