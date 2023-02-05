@@ -222,7 +222,7 @@ def merge_vendor_x_y_data(y_data):
     merged_df = x_data_df.merge(y_data_df, how='outer') # 294 rows, 55 columns
 
     # save merged data to data/all_vendors.csv
-    merged_df.to_csv("data/all_vendors.csv")
+    merged_df.to_csv("data/all_vendors.csv", index=False)
 
 
 if __name__ == "__main__":
