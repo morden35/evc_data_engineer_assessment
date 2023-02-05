@@ -1,28 +1,27 @@
-"""The goal of this file is to download Vendor Y's data from the API"""
-
-import json
+"""
+The goal of this file is to:
+    1. Download Vendor Y's data from the API
+    2. Either save Vendor Y's data as a json file OR
+    3. Merge Vendor Y's data with Vendor X's data and save as csv file
+"""
 
 import pandas as pd
 import requests
 
 
-def download_vendor_y(merge=True):
+def download_vendor_y():
     url = "https://k4clzaf58d.execute-api.us-east-1.amazonaws.com/default/handle_users"
     response = requests.get(url)
     if response.status_code == 200:
         y_data = response.json()
-        if merge == True:
-            merge_vendor_x_y_data(y_data)
-        else:
-            with open('data/vendor_y_data.json', 'w', encoding='utf-8') as f:
-                json.dump(y_data, f, indent=2)
+        merge_vendor_x_y_data(y_data)
     else:
         return f"API Error: {response.status_code}"
 
 
 def merge_vendor_x_y_data(y_data):
-    x_data_df = pd.read_csv("data/vendor_x_data.csv") # 55 columns, 147 rows
-    y_data_df = pd.json_normalize(y_data['data']) # 55 columns, 147 rows
+    x_data_df = pd.read_csv("data/vendor_x_data.csv") # 147 rows, 55 columns
+    y_data_df = pd.json_normalize(y_data['data']) # 147 rows, 55 columns
     
     # convert x_data_df column types
     x_data_df = x_data_df.astype({'VENDOR_ID': 'object',
@@ -137,8 +136,18 @@ def merge_vendor_x_y_data(y_data):
                                         'FIELD_START': 'field_start',
                                         'FIELD_END': 'field_end'})
 
-    # convert y_data_df column types
+    # take care of ambiguous date column
+    # years 00 - 23 are ambiguous
+    # since folks can't vote until age 18, years 06-23 we will assume are from the 20th century
+    # let's assume 00-05 are from the 21st century
+    for idx, dob in enumerate(y_data_df['dob']):
+        if int(dob[:2]) > 5:
+            y_data_df['dob'][idx] = '19' + dob
+        else:
+            y_data_df['dob'][idx] = '20'+ dob
     y_data_df['dob'] = pd.to_datetime(y_data_df['dob'], yearfirst=True)
+    
+    # convert y_data_df column types
     y_data_df = y_data_df.astype({'registration_id': 'object',
                                 'status': 'object',
                                 'tracking_source': 'object',
@@ -200,7 +209,11 @@ def merge_vendor_x_y_data(y_data):
                                           'email': 'email_address'})
 
     # merge 2 dataframes
-    merged_df = x_data_df.merge(y_data_df, how='outer')
+    merged_df = x_data_df.merge(y_data_df, how='outer') # 294 rows, 55 columns
 
-    # save data/all_vendors.csv
+    # save merged data to data/all_vendors.csv
     merged_df.to_csv("data/all_vendors.csv")
+
+
+if __name__ == "__main__":
+    download_vendor_y()
