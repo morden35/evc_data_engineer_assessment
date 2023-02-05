@@ -1,8 +1,8 @@
 """
 The goal of this file is to:
     1. Download Vendor Y's data from the API
-    2. Either save Vendor Y's data as a json file OR
-    3. Merge Vendor Y's data with Vendor X's data and save as csv file
+    2. Merge Vendor Y's data with Vendor X's data
+    3. Save merged data as csv file
 """
 
 import pandas as pd
@@ -10,6 +10,11 @@ import requests
 
 
 def download_vendor_y():
+    """
+    This function downloads Vendor Y's data form the API. If the download is successful,
+    the downloaded data is passed to merge_vendor_x_y_data. If the download fails,
+    we return a message with the status code.
+    """
     url = "https://k4clzaf58d.execute-api.us-east-1.amazonaws.com/default/handle_users"
     response = requests.get(url)
     if response.status_code == 200:
@@ -20,6 +25,11 @@ def download_vendor_y():
 
 
 def merge_vendor_x_y_data(y_data):
+    """This function takes in Vendor Y's data in json format. It then converts the json
+    to a pandas dataframe. It then imports Vendor X's data as a pandas dataframe. It then
+    converts the column datatypes and renames columns for each dataframe. Finally, the functions
+    merges the two dataframes into one, and saves as a csv file.
+    """
     x_data_df = pd.read_csv("data/vendor_x_data.csv") # 147 rows, 55 columns
     y_data_df = pd.json_normalize(y_data['data']) # 147 rows, 55 columns
     
