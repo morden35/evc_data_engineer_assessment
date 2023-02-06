@@ -43,7 +43,7 @@ create table s_f33890ec9c814bb1d9227550d09e9947.all_records as (
         , evc_year
     from public.qc_vendor_data
 )
-union
+union all
 select
   vendor_id as application_id,
   org as org_id,
@@ -87,3 +87,4 @@ select
   CAST(NULL AS varchar) as evc_year
 from
   vendor_x_registrations_raw
+where vendor_x_registrations_raw.status != 'Complete'
