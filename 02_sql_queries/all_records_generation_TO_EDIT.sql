@@ -86,5 +86,5 @@ select
   CAST(NULL AS varchar) as evc_month,
   CAST(NULL AS varchar) as evc_year
 from
-  vendor_x_registrations_raw
-where vendor_x_registrations_raw.status != 'Complete'
+  vendor_x_registrations_deduped
+where vendor_x_registrations_deduped.status != 'Complete'
